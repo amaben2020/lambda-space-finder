@@ -15,7 +15,7 @@ export class LambdaStack extends Stack {
     new LambdaFunction(this, 'HelloLambda', {
       runtime: Runtime.NODEJS_22_X,
       handler: 'hello.main',
-      code: Code.fromAsset(join(__dirname, '..', '..', 'services')),
+      code: Code.fromAsset(join(__dirname, '..', 'services')),
     });
   }
 }
