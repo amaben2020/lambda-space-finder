@@ -5,12 +5,13 @@ import { getSuffixFromStack } from '../utils';
 
 // this stack would hold the dynamodb table
 export class DataStack extends Stack {
+  public readonly spacesTable;
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const suffix = getSuffixFromStack(this);
 
-    new Table(this, 'SpacesTable', {
+    this.spacesTable = new Table(this, 'SpacesTable', {
       partitionKey: {
         name: 'id',
         type: AttributeType.STRING,
