@@ -1,13 +1,10 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import {
-  Code,
-  Function as LambdaFunction,
-  Runtime,
-} from 'aws-cdk-lib/aws-lambda';
+import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { join } from 'path';
 import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
+import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 
 // this stack needs to communicate with the Data and Api stacks, you need to send your entire ref to the ApiStack
 
@@ -20,10 +17,10 @@ export class LambdaStack extends Stack {
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
 
-    const helloLambda = new LambdaFunction(this, 'HelloLambda', {
+    const helloLambda = new NodejsFunction(this, 'HelloLambda', {
       runtime: Runtime.NODEJS_22_X,
       handler: 'hello.main',
-      code: Code.fromAsset(join(__dirname, '..', 'services')),
+      entry: join(__dirname, '..', 'services', 'hello.ts'),
       // a way to pass data from one stack to another via env vars
       environment: {
         TABLE_NAME: props.spacesTable.tableName,
