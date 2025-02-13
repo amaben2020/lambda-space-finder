@@ -4,10 +4,12 @@ import { APIGatewayProxyEvent, Context } from 'aws-lambda';
 async function handler(event: APIGatewayProxyEvent, context: Context) {
   console.log(event);
 
-  return {
+  const response = {
     statusCode: 200,
     body: JSON.stringify(`Hello World ${process.env.TABLE_NAME}`),
   };
+
+  return response;
 }
 
 export { handler };

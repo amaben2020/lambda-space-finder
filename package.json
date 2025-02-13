@@ -14,11 +14,11 @@
     "@types/node": "^22.13.1",
     "aws-cdk": "^2.178.1",
     "aws-cdk-lib": "^2.178.1",
-    "constructs": "^10.4.2"
+    "constructs": "^10.4.2",
+    "esbuild": "^0.25.0"
   },
   "dependencies": {
     "@types/uuid": "^10.0.0",
-    "esbuild": "^0.25.0",
     "uuid": "^11.0.5"
   }
 }
