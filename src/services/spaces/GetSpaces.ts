@@ -25,8 +25,7 @@ export async function getSpaces(
         })
       );
 
-      if (getItemResponse.Item) {
-        console.log(unmarshall(getItemResponse.Item));
+      if (getItemResponse?.Item) {
         return {
           statusCode: 200,
           body: JSON.stringify(unmarshall(getItemResponse.Item)),

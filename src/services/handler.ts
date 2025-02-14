@@ -16,25 +16,26 @@ async function handler(
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> {
-  let message: string;
+  console.log(event.httpMethod);
 
-  try {
-    switch (event.httpMethod) {
-      case 'GET':
-        const result = await getSpaces(event, ddbClient);
+  switch (event.httpMethod) {
+    case 'GET':
+      const result = await getSpaces(event, ddbClient);
+      console.log(result);
+      return result;
 
-        return result;
+    case 'POST':
+      const response = await postSpaces(event, ddbClient);
+      return response;
 
-      case 'POST':
-        const response = await postSpaces(event, ddbClient);
-        return response;
-
-      default:
-        break;
-    }
-  } catch (error) {
-    console.log(error);
+    default:
+      throw Error('Something went terribly wrong');
   }
+
+  // return {
+  //   statusCode: 200,
+  //   body: 'Nothing was returned',
+  // };
 }
 
 export { handler };
