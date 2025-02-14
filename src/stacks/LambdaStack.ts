@@ -21,21 +21,21 @@ export class LambdaStack extends Stack {
     const helloLambda = new NodejsFunction(this, 'HelloLambda', {
       runtime: Runtime.NODEJS_22_X,
       handler: 'handler', // name of the function definition exported
-      entry: join(__dirname, '..', 'services', 'hello.ts'),
+      entry: join(__dirname, '..', 'services', 'handler.ts'),
       // a way to pass data from one stack to another via env vars,  we are passing it as env to the lambda handlers
       environment: {
         TABLE_NAME: props.spacesTable.tableName,
       },
     });
 
-    helloLambda.addToRolePolicy(
-      new PolicyStatement({
-        effect: Effect.ALLOW,
+    // helloLambda.addToRolePolicy(
+    //   new PolicyStatement({
+    //     effect: Effect.ALLOW,
 
-        actions: ['s3:ListAllMyBuckets', 's3:ListBucket'],
-        resources: ['*'],
-      })
-    );
+    //     actions: ['s3:ListAllMyBuckets', 's3:ListBucket'],
+    //     resources: ['*'],
+    //   })
+    // );
 
     this.helloLambdaIntegration = new LambdaIntegration(helloLambda);
   }

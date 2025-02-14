@@ -1,2 +1,5 @@
 GET https://kw2erpxdk7.execute-api.eu-west-1.amazonaws.com/prod/spaces
 ###
+
+POST https://kw2erpxdk7.execute-api.eu-west-1.amazonaws.com/prod/spaces
+###
