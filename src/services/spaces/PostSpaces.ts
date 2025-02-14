@@ -1,37 +1,45 @@
 import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { v4 } from 'uuid';
+import { validateAsSpaceEntry } from '../shared/validator';
 
 export async function postSpaces(
   event: APIGatewayProxyEvent,
   ddbClient: DynamoDBClient
 ): Promise<APIGatewayProxyResult> {
-  const randomId = v4();
+  try {
+    const randomId = v4();
 
-  const item = JSON.parse(event.body);
+    console.log(event.body);
 
-  item.id = randomId;
+    const item = JSON.parse(event.body);
 
-  console.log('process.env.TABLE_NAME ===>', process.env.TABLE_NAME);
+    validateAsSpaceEntry(item);
 
-  const result = await ddbClient.send(
-    new PutItemCommand({
-      TableName: process.env.TABLE_NAME,
-      Item: {
-        id: {
-          S: item.id,
+    const result = await ddbClient.send(
+      new PutItemCommand({
+        TableName: process.env.TABLE_NAME,
+        Item: {
+          id: {
+            S: randomId,
+          },
+          location: {
+            S: item.location,
+          },
+          name: {
+            S: item.name,
+          },
         },
-        location: {
-          S: item.location,
-        },
-      },
-    })
-  );
+      })
+    );
 
-  console.log('RESULT ===> ', result);
+    console.log('res', result);
 
-  return {
-    statusCode: 201,
-    body: JSON.stringify({ id: randomId }),
-  };
+    return {
+      statusCode: 201,
+      body: JSON.stringify({ result }),
+    };
+  } catch (error) {
+    console.log(error);
+  }
 }

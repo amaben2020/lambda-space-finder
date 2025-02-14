@@ -5,6 +5,7 @@ POST https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces
 content-type: application/json
 
 {
-  "location" : "Paris",
+  "location" : "Dugbana",
+  "name": "Benoski"
 }
 ###

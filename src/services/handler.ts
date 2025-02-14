@@ -7,6 +7,7 @@ import {
 import { postSpaces } from './spaces/PostSpaces';
 import { getSpaces } from './spaces/GetSpaces';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
+import { MissingFieldError } from './shared/validator';
 
 const ddbClient = new DynamoDBClient({});
 
@@ -18,24 +19,29 @@ async function handler(
 ): Promise<APIGatewayProxyResult> {
   console.log(event.httpMethod);
 
-  switch (event.httpMethod) {
-    case 'GET':
-      const result = await getSpaces(event, ddbClient);
-      console.log(result);
-      return result;
+  try {
+    switch (event.httpMethod) {
+      case 'GET':
+        const result = await getSpaces(event, ddbClient);
+        console.log(result);
+        return result;
 
-    case 'POST':
-      const response = await postSpaces(event, ddbClient);
-      return response;
+      case 'POST':
+        const response = await postSpaces(event, ddbClient);
+        console.log('response', response);
+        return response;
 
-    default:
-      throw Error('Something went terribly wrong');
+      default:
+        throw Error('Something went terribly wrong');
+    }
+  } catch (error) {
+    if (error instanceof MissingFieldError) {
+      return {
+        statusCode: 400,
+        body: error.message,
+      };
+    }
   }
-
-  // return {
-  //   statusCode: 200,
-  //   body: 'Nothing was returned',
-  // };
 }
 
 export { handler };
