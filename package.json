@@ -18,6 +18,7 @@
     "esbuild": "^0.25.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.744.0",
     "@types/uuid": "^10.0.0",
     "uuid": "^11.0.5"
   }

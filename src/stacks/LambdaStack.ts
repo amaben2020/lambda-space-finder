@@ -5,6 +5,7 @@ import { join } from 'path';
 import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 // this stack needs to communicate with the Data and Api stacks, you need to send your entire ref to the ApiStack
 
@@ -21,11 +22,20 @@ export class LambdaStack extends Stack {
       runtime: Runtime.NODEJS_22_X,
       handler: 'handler', // name of the function definition exported
       entry: join(__dirname, '..', 'services', 'hello.ts'),
-      // a way to pass data from one stack to another via env vars
+      // a way to pass data from one stack to another via env vars,  we are passing it as env to the lambda handlers
       environment: {
         TABLE_NAME: props.spacesTable.tableName,
       },
     });
+
+    helloLambda.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+
+        actions: ['s3:ListAllMyBuckets', 's3:ListBucket'],
+        resources: ['*'],
+      })
+    );
 
     this.helloLambdaIntegration = new LambdaIntegration(helloLambda);
   }
