@@ -1,5 +1,10 @@
-GET https://kw2erpxdk7.execute-api.eu-west-1.amazonaws.com/prod/spaces
+GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces
 ###
 
-POST https://kw2erpxdk7.execute-api.eu-west-1.amazonaws.com/prod/spaces
+POST https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces
+content-type: application/json
+
+{
+  "location" : "Paris",
+}
 ###

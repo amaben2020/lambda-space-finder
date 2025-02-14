@@ -14,11 +14,11 @@ interface LambdaStackProps extends StackProps {
 }
 
 export class LambdaStack extends Stack {
-  public readonly helloLambdaIntegration: LambdaIntegration;
+  public readonly spacesLambdaIntegration: LambdaIntegration;
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
 
-    const helloLambda = new NodejsFunction(this, 'HelloLambda', {
+    const spacesLambda = new NodejsFunction(this, 'SpacesLambda', {
       runtime: Runtime.NODEJS_22_X,
       handler: 'handler', // name of the function definition exported
       entry: join(__dirname, '..', 'services', 'handler.ts'),
@@ -28,7 +28,7 @@ export class LambdaStack extends Stack {
       },
     });
 
-    // helloLambda.addToRolePolicy(
+    // spacesLambda.addToRolePolicy(
     //   new PolicyStatement({
     //     effect: Effect.ALLOW,
 
@@ -37,6 +37,15 @@ export class LambdaStack extends Stack {
     //   })
     // );
 
-    this.helloLambdaIntegration = new LambdaIntegration(helloLambda);
+    // enable us connect our lambda to table POST
+    spacesLambda.addToRolePolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        resources: [props.spacesTable.tableArn],
+        actions: ['dynamodb:PutItem'],
+      })
+    );
+
+    this.spacesLambdaIntegration = new LambdaIntegration(spacesLambda);
   }
 }

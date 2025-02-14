@@ -1,3 +1,9 @@
-import { handler } from '../services/hello';
+import { handler } from '../services/handler';
 
-handler({} as any, {} as any);
+handler(
+  {
+    httpMethod: 'POST',
+    body: JSON.stringify({ location: 'PARIS' }),
+  } as any,
+  {} as any
+);
