@@ -1,4 +1,4 @@
-GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces
+GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces?id=5NGHFVK4FIRI47EMNVVFFCSN7BVV4KQNSO5AEMVJF66Q9ASUAAJG
 ###
 
 POST https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces
