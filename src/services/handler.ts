@@ -6,6 +6,7 @@ import {
 } from 'aws-lambda';
 import { postSpaces } from './spaces/PostSpaces';
 import { getSpaces } from './spaces/GetSpaces';
+import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
 const ddbClient = new DynamoDBClient({});
 
@@ -34,11 +35,6 @@ async function handler(
   } catch (error) {
     console.log(error);
   }
-
-  return {
-    statusCode: 200,
-    body: message,
-  };
 }
 
 export { handler };
