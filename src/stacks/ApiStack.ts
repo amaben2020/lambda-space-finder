@@ -15,7 +15,7 @@ interface ApiStackProps extends StackProps {
     signin: LambdaIntegration;
     secret: LambdaIntegration;
   };
-  // authorizer: CognitoUserPoolsAuthorizer;
+  authorizer: CognitoUserPoolsAuthorizer;
 }
 
 export class ApiStack extends Stack {

@@ -13,9 +13,11 @@ const lambdaStack = new LambdaStack(app, 'LambdaStack', {
   auth: {
     userPool: authStack.userPool,
     userPoolClient: authStack.userPoolClient,
+    authorizer: authStack.authorizer,
   },
 });
 new ApiStack(app, 'ApiStack', {
   integrations: lambdaStack.integrations,
   // authorizer: authStack.authorizer,
+  authorizer: lambdaStack.integrations.authorizer,
 });

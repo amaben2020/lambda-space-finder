@@ -9,3 +9,5 @@ const handler = async (): Promise<{
 };
 
 export { handler };
+
+// Note: Ensure that POSTMAN authorization is set to No Auth, Headers ===> Authorization Bearer <token>
