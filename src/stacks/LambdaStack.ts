@@ -2,12 +2,7 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { join } from 'path';
-import {
-  AuthorizationType,
-  CognitoUserPoolsAuthorizer,
-  LambdaIntegration,
-  RestApi,
-} from 'aws-cdk-lib/aws-apigateway';
+import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
@@ -18,7 +13,6 @@ interface LambdaStackProps extends StackProps {
   auth: {
     userPool: UserPool;
     userPoolClient: UserPoolClient;
-    authorizer: any;
   };
 }
 
@@ -30,7 +24,6 @@ export class LambdaStack extends Stack {
     confirm: LambdaIntegration;
     signin: LambdaIntegration;
     secret: LambdaIntegration;
-    authorizer: CognitoUserPoolsAuthorizer;
   };
 
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
@@ -105,30 +98,11 @@ export class LambdaStack extends Stack {
       })
     );
 
-    // // Create an authorizer based on the user pool
-    const authorizer = new CognitoUserPoolsAuthorizer(
-      this,
-      'myFirstAuthorizer',
-      {
-        cognitoUserPools: [props.auth.userPool],
-        identitySource: 'method.request.header.Authorization',
-      }
-    );
-
-    const myFirstApi = new RestApi(this, 'myFirstApi', {});
-
     const secretLambda = new NodejsFunction(this, 'secret', {
       entry: join(__dirname, '..', 'services', 'auth', 'secret.ts'),
       handler: 'handler',
       runtime: Runtime.NODEJS_22_X,
     });
-
-    myFirstApi.root
-      .addResource('secret')
-      .addMethod('GET', new LambdaIntegration(secretLambda), {
-        authorizer,
-        authorizationType: AuthorizationType.COGNITO,
-      });
 
     // 📌 Store Lambda Integrations
     this.integrations = {
@@ -137,7 +111,6 @@ export class LambdaStack extends Stack {
       confirm: new LambdaIntegration(confirmLambda),
       signin: new LambdaIntegration(signinLambda),
       secret: new LambdaIntegration(secretLambda),
-      authorizer: authorizer,
     };
   }
 }

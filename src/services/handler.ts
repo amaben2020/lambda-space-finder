@@ -6,7 +6,6 @@ import {
 } from 'aws-lambda';
 import { postSpaces } from './spaces/PostSpaces';
 import { getSpaces } from './spaces/GetSpaces';
-import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 import { MissingFieldError } from './shared/validator';
 
 const ddbClient = new DynamoDBClient({});
