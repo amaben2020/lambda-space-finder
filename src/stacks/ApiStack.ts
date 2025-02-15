@@ -27,11 +27,14 @@ export class ApiStack extends Stack {
     const api = new RestApi(this, 'spacesApi');
 
     // Create an authorizer based on the user pool
-    const authorizer: CognitoUserPoolsAuthorizer =
-      new CognitoUserPoolsAuthorizer(this, 'myFirstAuthorizer', {
+    const authorizer = new CognitoUserPoolsAuthorizer(
+      this,
+      'myFirstAuthorizer',
+      {
         cognitoUserPools: [props.userPool],
         identitySource: 'method.request.header.Authorization',
-      });
+      }
+    );
 
     authorizer._attachToApi(api);
 

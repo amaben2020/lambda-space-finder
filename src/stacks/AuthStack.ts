@@ -27,10 +27,5 @@ export class AuthStack extends cdk.Stack {
         },
       }
     );
-
-    // this.authorizer = new CognitoUserPoolsAuthorizer(this, 'SpacesAuthorizer', {
-    //   cognitoUserPools: [this.userPool],
-    //   identitySource: 'method.request.header.Authorization',
-    // });
   }
 }
