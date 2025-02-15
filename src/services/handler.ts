@@ -16,8 +16,6 @@ async function handler(
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> {
-  console.log(event.httpMethod);
-
   try {
     switch (event.httpMethod) {
       case 'GET':

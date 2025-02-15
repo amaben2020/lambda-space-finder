@@ -63,7 +63,6 @@ export class ApiStack extends Stack {
       .addMethod('POST', props.integrations.signin);
 
     const secretResource = api.root.addResource('secret');
-
     secretResource.addMethod('GET', props.integrations.secret, optionsWithAuth);
   }
 }

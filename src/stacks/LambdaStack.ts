@@ -24,6 +24,7 @@ export class LambdaStack extends Stack {
     confirm: LambdaIntegration;
     signin: LambdaIntegration;
     secret: LambdaIntegration;
+    image: LambdaIntegration;
   };
 
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
@@ -104,6 +105,12 @@ export class LambdaStack extends Stack {
       runtime: Runtime.NODEJS_22_X,
     });
 
+    const imageLambda = new NodejsFunction(this, 'image', {
+      entry: join(__dirname, '..', 'services', 'image', 'handler.ts'),
+      handler: 'handler',
+      runtime: Runtime.NODEJS_22_X,
+    });
+
     // 📌 Store Lambda Integrations
     this.integrations = {
       spaces: new LambdaIntegration(spacesLambda),
@@ -111,6 +118,7 @@ export class LambdaStack extends Stack {
       confirm: new LambdaIntegration(confirmLambda),
       signin: new LambdaIntegration(signinLambda),
       secret: new LambdaIntegration(secretLambda),
+      image: new LambdaIntegration(imageLambda),
     };
   }
 }
