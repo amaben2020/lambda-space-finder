@@ -2,42 +2,47 @@ import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { join } from 'path';
-import { LambdaIntegration } from 'aws-cdk-lib/aws-apigateway';
+import {
+  CognitoUserPoolsAuthorizer,
+  LambdaIntegration,
+} from 'aws-cdk-lib/aws-apigateway';
 import { ITable } from 'aws-cdk-lib/aws-dynamodb';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-
-// this stack needs to communicate with the Data and Api stacks, you need to send your entire ref to the ApiStack
+import { type UserPoolClient, type UserPool } from 'aws-cdk-lib/aws-cognito';
 
 interface LambdaStackProps extends StackProps {
   spacesTable: ITable;
+  auth: {
+    userPool: UserPool;
+    userPoolClient: UserPoolClient;
+  };
 }
 
 export class LambdaStack extends Stack {
-  public readonly spacesLambdaIntegration: LambdaIntegration;
+  // all Lambdas
+  public readonly integrations: {
+    spaces: LambdaIntegration;
+    signup: LambdaIntegration;
+    confirm: LambdaIntegration;
+    signin: LambdaIntegration;
+    secret: LambdaIntegration;
+    // authorizer: CognitoUserPoolsAuthorizer;
+  };
+
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
 
+    // 🏢 Spaces Lambda
     const spacesLambda = new NodejsFunction(this, 'SpacesLambda', {
       runtime: Runtime.NODEJS_22_X,
-      handler: 'handler', // name of the function definition exported
+      handler: 'handler',
       entry: join(__dirname, '..', 'services', 'handler.ts'),
-      // a way to pass data from one stack to another via env vars,  we are passing it as env to the lambda handlers
       environment: {
         TABLE_NAME: props.spacesTable.tableName,
       },
     });
 
-    // spacesLambda.addToRolePolicy(
-    //   new PolicyStatement({
-    //     effect: Effect.ALLOW,
-
-    //     actions: ['s3:ListAllMyBuckets', 's3:ListBucket'],
-    //     resources: ['*'],
-    //   })
-    // );
-
-    // enable us connect our lambda to table POST
     spacesLambda.addToRolePolicy(
       new PolicyStatement({
         effect: Effect.ALLOW,
@@ -46,6 +51,81 @@ export class LambdaStack extends Stack {
       })
     );
 
-    this.spacesLambdaIntegration = new LambdaIntegration(spacesLambda);
+    // 🏢 Signup Lambda
+    const signupLambda = new NodejsFunction(this, 'SignupLambda', {
+      entry: join(__dirname, '..', 'services', 'auth', 'signupHandler.ts'),
+      runtime: Runtime.NODEJS_22_X,
+      handler: 'handler',
+      environment: {
+        USER_POOL_CLIENT_ID: props.auth.userPoolClient.userPoolClientId,
+      },
+    });
+
+    signupLambda.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['cognito-idp:SignUp'],
+        resources: [props.auth.userPool.userPoolArn],
+      })
+    );
+
+    // 🏢 Confirm Lambda
+    const confirmLambda = new NodejsFunction(this, 'ConfirmLambda', {
+      entry: join(__dirname, '..', 'services', 'auth', 'confirmHandler.ts'),
+      handler: 'handler',
+      runtime: Runtime.NODEJS_22_X,
+      environment: {
+        USER_POOL_CLIENT_ID: props.auth.userPoolClient.userPoolClientId,
+      },
+    });
+
+    confirmLambda.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['cognito-idp:ConfirmSignUp'],
+        resources: [props.auth.userPool.userPoolArn],
+      })
+    );
+
+    // 🏢 Signin Lambda
+    const signinLambda = new NodejsFunction(this, 'SigninLambda', {
+      entry: join(__dirname, '..', 'services', 'auth', 'signinHandler.ts'),
+      handler: 'handler',
+      runtime: Runtime.NODEJS_22_X,
+      environment: {
+        USER_POOL_CLIENT_ID: props.auth.userPoolClient.userPoolClientId,
+      },
+    });
+
+    signinLambda.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['cognito-idp:InitiateAuth'],
+        resources: [props.auth.userPool.userPoolArn],
+      })
+    );
+
+    // // Create an authorizer based on the user pool
+    // const authorizer = new CognitoUserPoolsAuthorizer(
+    //   this,
+    //   'myFirstAuthorizer',
+    //   {
+    //     cognitoUserPools: [props.auth.userPool],
+    //     identitySource: 'method.request.header.Authorization',
+    //   }
+    // );
+
+    const secretLambda = new NodejsFunction(this, 'secret', {
+      entry: join(__dirname, '..', 'services', 'auth', 'secret.ts'),
+      handler: 'handler',
+      runtime: Runtime.NODEJS_22_X,
+    });
+
+    // 📌 Store Lambda Integrations
+    this.integrations = {
+      spaces: new LambdaIntegration(spacesLambda),
+      signup: new LambdaIntegration(signupLambda),
+      confirm: new LambdaIntegration(confirmLambda),
+      signin: new LambdaIntegration(signinLambda),
+      secret: new LambdaIntegration(secretLambda),
+      // authorizer: authorizer,
+    };
   }
 }
