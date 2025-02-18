@@ -1,4 +1,4 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { join } from 'path';
@@ -24,6 +24,8 @@ import {
   SubnetType,
   Vpc,
 } from 'aws-cdk-lib/aws-ec2';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 interface LambdaStackProps extends StackProps {
   spacesTable: ITable;
@@ -31,6 +33,7 @@ interface LambdaStackProps extends StackProps {
     userPool: UserPool;
     userPoolClient: UserPoolClient;
   };
+  // s3Bucket: Bucket;
   // database: DatabaseInstance;
   // vpc: Vpc;
   // dbName: string;
@@ -47,6 +50,7 @@ export class LambdaStack extends Stack {
     secret: LambdaIntegration;
     image: LambdaIntegration;
     rdsLambda: LambdaIntegration;
+    lambdaFn: LambdaIntegration;
   };
 
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
@@ -243,6 +247,38 @@ export class LambdaStack extends Stack {
     // permission to the lambda
     dbInstance.secret?.grantRead(rdsLambdaFn);
 
+    // Fetch the S3 bucket name from Parameter Store
+    const s3BucketName = StringParameter.valueForStringParameter(
+      this,
+      '/datastack/s3-bucket-name'
+    );
+
+    console.log(s3BucketName);
+
+    // Use the S3 bucket in this stack
+    const s3Bucket = Bucket.fromBucketName(this, 'S3Bucket', s3BucketName);
+
+    // CRUD Lambda:
+    const lambdaFn = new NodejsFunction(this, 'S3CrudLambda', {
+      entry: join(__dirname, '..', 'lambdas', 's3Crud.ts'),
+      runtime: Runtime.NODEJS_18_X,
+      timeout: Duration.minutes(1),
+      memorySize: 256,
+      functionName: 'S3CrudLambda',
+      environment: {
+        BUCKET_NAME: s3Bucket.bucketName,
+      },
+    });
+
+    const lambdaS3Policy = new PolicyStatement({
+      actions: ['s3:GetObject', 's3:PutObject', 's3:DeleteObject'],
+      resources: [`${s3Bucket.bucketArn}/*`], // Grant access to all objects inside the bucket
+    });
+
+    lambdaFn.addToRolePolicy(lambdaS3Policy);
+    //  OR  //
+    // props.s3Bucket.grantReadWrite(lambdaFn);
+
     // 📌 Store Lambda Integrations
     this.integrations = {
       spaces: new LambdaIntegration(spacesLambda),
@@ -252,6 +288,7 @@ export class LambdaStack extends Stack {
       secret: new LambdaIntegration(secretLambda),
       image: new LambdaIntegration(imageLambda),
       rdsLambda: new LambdaIntegration(rdsLambdaFn),
+      lambdaFn: new LambdaIntegration(lambdaFn),
     };
   }
 }

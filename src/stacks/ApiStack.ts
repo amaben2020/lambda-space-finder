@@ -17,6 +17,7 @@ interface ApiStackProps extends StackProps {
     signin: LambdaIntegration;
     secret: LambdaIntegration;
     rdsLambda: LambdaIntegration;
+    lambdaFn: LambdaIntegration;
   };
   userPool: UserPool;
 }
@@ -72,5 +73,11 @@ export class ApiStack extends Stack {
       props.integrations.rdsLambda
       // optionsWithAuth
     );
+
+    const s3Resource = api.root.addResource('s3-lambda');
+    s3Resource.addMethod('POST', props.integrations.lambdaFn);
+    s3Resource.addMethod('PUT', props.integrations.lambdaFn);
+    s3Resource.addMethod('GET', props.integrations.lambdaFn);
+    s3Resource.addMethod('DELETE', props.integrations.lambdaFn);
   }
 }

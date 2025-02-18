@@ -10,6 +10,7 @@ const dataStack = new DataStack(app, 'DataStack');
 const authStack = new AuthStack(app, 'AuthStack');
 const lambdaStack = new LambdaStack(app, 'LambdaStack', {
   spacesTable: dataStack.spacesTable,
+  // s3Bucket: dataStack.s3Bucket,
   auth: {
     userPool: authStack.userPool,
     userPoolClient: authStack.userPoolClient,

@@ -4,6 +4,14 @@ GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces?id=5a79c6
 GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/rds
 ###
 
+GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/s3-lambda
+content-type: application/json
+
+{
+  "operation" : "READ"
+}
+###
+
 POST https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces
 content-type: application/json
 
