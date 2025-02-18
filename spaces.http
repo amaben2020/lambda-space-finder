@@ -1,10 +1,10 @@
-GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces?id=5a79c69b-31d7-4ffe-8546-0587ebd923d4
+GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/spaces?id=5a79c69b-31d7-4ffe-8546-0587ebd923d4
 ###
 
-GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/rds
+GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/rds
 ###
 
-GET https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/s3-lambda
+POST https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/s3-lambda
 content-type: application/json
 
 {
@@ -12,7 +12,7 @@ content-type: application/json
 }
 ###
 
-POST https://uslbc8e6pk.execute-api.eu-west-1.amazonaws.com/prod/spaces
+POST https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/spaces
 content-type: application/json
 
 {
