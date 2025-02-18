@@ -2,13 +2,20 @@ import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { getSuffixFromStack } from '../utils';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { BlockPublicAccess, Bucket } from 'aws-cdk-lib/aws-s3';
+import {
+  InstanceClass,
+  InstanceType,
+  InstanceSize,
+  SecurityGroup,
+  SubnetType,
+  Vpc,
+} from 'aws-cdk-lib/aws-ec2';
 import {
   Credentials,
   DatabaseInstance,
   DatabaseInstanceEngine,
-  MysqlEngineVersion,
+  PostgresEngineVersion,
 } from 'aws-cdk-lib/aws-rds';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
@@ -18,32 +25,60 @@ export class DataStack extends Stack {
   public readonly spacesBucket;
   public readonly database: DatabaseInstance;
   public readonly dbSecret: Secret;
+  public readonly vpc: Vpc;
+  public readonly dbName: string;
+  public readonly dbSecurityGroup: SecurityGroup;
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const suffix = getSuffixFromStack(this);
 
-    // Create VPC for RDS
-    const vpc = new Vpc(this, 'ImageAppVPC');
-    // Create Secret for DB Credentials
-    this.dbSecret = new Secret(this, 'DBSecret', {
-      generateSecretString: {
-        secretStringTemplate: JSON.stringify({ username: 'admin' }),
-        excludePunctuation: true,
-        passwordLength: 16,
-      },
-    });
+    // const vpc = new Vpc(this, 'VpcLambda', {
+    //   maxAzs: 2,
+    //   subnetConfiguration: [
+    //     {
+    //       cidrMask: 24,
+    //       name: 'privatelambda',
+    //       subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    //     },
+    //     {
+    //       cidrMask: 24,
+    //       name: 'public',
+    //       subnetType: SubnetType.PUBLIC,
+    //     },
+    //   ],
+    // });
 
-    // Create RDS Instance
-    this.database = new DatabaseInstance(this, 'ImagerDB', {
-      engine: DatabaseInstanceEngine.mysql({
-        version: MysqlEngineVersion.VER_8_0,
-      }),
-      vpc,
-      credentials: Credentials.fromSecret(this.dbSecret),
-      allocatedStorage: 20,
-      removalPolicy: RemovalPolicy.DESTROY, // Delete DB on stack removal (for testing)
-    });
+    // const dbSecurityGroup = new SecurityGroup(this, 'DbSecurityGroup', {
+    //   vpc,
+    // });
+
+    // const databaseName = 'spacespostgresdb';
+
+    // const dbInstance = new DatabaseInstance(this, 'Instance', {
+    //   engine: DatabaseInstanceEngine.postgres({
+    //     version: PostgresEngineVersion.VER_13,
+    //   }),
+    //   // optional, defaults to m5.large
+    //   instanceType: InstanceType.of(
+    //     InstanceClass.BURSTABLE3,
+    //     InstanceSize.SMALL
+    //   ),
+    //   vpc,
+    //   vpcSubnets: vpc.selectSubnets({
+    //     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    //   }),
+    //   databaseName,
+    //   securityGroups: [dbSecurityGroup],
+    //   credentials: Credentials.fromGeneratedSecret('postgres'),
+    //   maxAllocatedStorage: 200,
+    // });
+
+    // this.database = dbInstance;
+    // this.vpc = vpc;
+    // this.dbName = databaseName;
+    // this.dbSecurityGroup = dbSecurityGroup;
 
     // DynamoDB
     this.spacesTable = new Table(this, 'SpacesTable', {
@@ -54,10 +89,10 @@ export class DataStack extends Stack {
       tableName: `SpaceTable-${suffix}`,
     });
 
-    this.spacesBucket = new Bucket(this, 'ImageBucket', {
-      bucketName: 'images',
-      publicReadAccess: true,
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
+    // this.spacesBucket = new Bucket(this, 'ImageBucket', {
+    //   bucketName: 'images-bucket',
+    //   removalPolicy: RemovalPolicy.DESTROY,
+    //   blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+    // });
   }
 }

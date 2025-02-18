@@ -16,6 +16,7 @@ interface ApiStackProps extends StackProps {
     confirm: LambdaIntegration;
     signin: LambdaIntegration;
     secret: LambdaIntegration;
+    rdsLambda: LambdaIntegration;
   };
   userPool: UserPool;
 }
@@ -64,5 +65,12 @@ export class ApiStack extends Stack {
 
     const secretResource = api.root.addResource('secret');
     secretResource.addMethod('GET', props.integrations.secret, optionsWithAuth);
+
+    const rdsResource = api.root.addResource('rds');
+    rdsResource.addMethod(
+      'GET',
+      props.integrations.rdsLambda
+      // optionsWithAuth
+    );
   }
 }

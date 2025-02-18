@@ -14,6 +14,10 @@ const lambdaStack = new LambdaStack(app, 'LambdaStack', {
     userPool: authStack.userPool,
     userPoolClient: authStack.userPoolClient,
   },
+  // database: dataStack.database,
+  // vpc: dataStack.vpc,
+  // dbName: dataStack.dbName,
+  // dbSecurityGroup: dataStack.dbSecurityGroup,
 });
 new ApiStack(app, 'ApiStack', {
   integrations: lambdaStack.integrations,
