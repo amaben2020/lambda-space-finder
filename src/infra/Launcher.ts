@@ -4,6 +4,7 @@ import { LambdaStack } from '../stacks/LambdaStack';
 import { ApiStack } from '../stacks/ApiStack';
 import { AuthStack } from '../stacks/AuthStack';
 import { RdsDataNodejsStack } from '../stacks/RDSStack';
+import { MonitorStack } from '../stacks/MonitorStack';
 
 const app = new App();
 
@@ -28,3 +29,5 @@ new ApiStack(app, 'ApiStack', {
 
 // expensive
 // new RdsDataNodejsStack(app, 'RdsNodeJsStack');
+
+new MonitorStack(app, 'MonitorStack');

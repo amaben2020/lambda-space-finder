@@ -7,8 +7,10 @@ import {
 import { postSpaces } from './spaces/PostSpaces';
 import { getSpaces } from './spaces/GetSpaces';
 import { MissingFieldError } from './shared/validator';
+import { captureAWSClient } from 'aws-xray-sdk-core/dist/lib/patchers/aws3_p';
+import { getSegment } from 'aws-xray-sdk-core';
 
-const ddbClient = new DynamoDBClient({});
+const ddbClient = captureAWSClient(new DynamoDBClient({}));
 
 // TODO: we can extract the handler later
 
@@ -16,6 +18,12 @@ async function handler(
   event: APIGatewayProxyEvent,
   context: Context
 ): Promise<APIGatewayProxyResult> {
+  // simulating a long api call
+  // const subSegment = getSegment().addNewSubsegment('MyLongCall');
+  await new Promise((res) => setTimeout(res, 3000));
+
+  // subSegment.close();
+
   try {
     switch (event.httpMethod) {
       case 'GET':

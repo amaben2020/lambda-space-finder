@@ -1,4 +1,17 @@
+@token=eyJraWQiOiJzYVU4cFE3Sm5rR3Rid1FrazNCNHFxcFROMHR0TTZsamxGczZiMW9IdjZzPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI1MjA1YzQ4NC1mMGIxLTcwNzItYWM3NC00ZmIyMWY3MjMwZDYiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tXC9ldS13ZXN0LTFfVFRReHFadnlYIiwiY29nbml0bzp1c2VybmFtZSI6ImFtYWJlbiIsIm9yaWdpbl9qdGkiOiI1ZmMwNzY0Ny0xY2RhLTQyMjQtOWQzOS0zYmYwZDJhMDNkODEiLCJhdWQiOiI3NmNzaWZqaW04Mzc4cGtkMzdxNmI3djN1cCIsImV2ZW50X2lkIjoiNWRhZmVlNjEtZDA0OS00M2Q5LTkzMWQtMTFlNTAzN2I3MGZiIiwidG9rZW5fdXNlIjoiaWQiLCJhdXRoX3RpbWUiOjE3Mzk5NzExNTgsImV4cCI6MTczOTk3NDc1OCwiaWF0IjoxNzM5OTcxMTU4LCJqdGkiOiI3MTBhMWZmNy0wZTE1LTQzZTMtYTFhNS01NmYyNjJiOTFiNjYiLCJlbWFpbCI6InV6b2NodWt3dWJlbmFtYXJhQGdtYWlsLmNvbSJ9.djpbFB2PncmTlJA6ldh06F53Xp8SvRdWXaI0ckL9cBOpnCMVlvnM02wY1baqQ_JQVT5u1NiMa_KK_rdESaHQExSKE44EpcUBOr2sEOZJhHyg38DCVBMV2FMCvmYaiPrwQLxGGh263sE1cQSqmO-w6nZ7LloSWk4gPp7CfjT7XXE70Q2bQVqeTjZP0gwHTvGNqrddQtW4Ef-ecz34HZVQS98-RLTOMyRVUVKwW9sxt6HCW1sOf-04h-U56e7T9UMp9zd6-4S_CGG7OACCfWdYzELxztWHr2iAS-0y96kZ8Hhe-qFuQbed3EEiabjH8HVNZ6doAAPFV0HGRmvIrdmm6g
+
 GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/spaces?id=5a79c69b-31d7-4ffe-8546-0587ebd923d4
+Authorization: {{token}}
+###
+
+GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/spaces
+Authorization: {{token}}
+###
+
+POST https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/spaces
+Authorization: {{token}}
+
+{ "location": "Oba, Anambra", "name": "BenOSKI 1" }
 ###
 
 GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/rds
@@ -10,7 +23,6 @@ GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/items/1
 
 POST https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/s3-lambda
 content-type: application/json
-
 {
   "operation" : "READ"
 }
@@ -18,7 +30,6 @@ content-type: application/json
 
 POST https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/spaces
 content-type: application/json
-
 {
   "location" : "Dugbana",
   "name": "Benoski"
