@@ -3,6 +3,7 @@ import { DataStack } from '../stacks/DataStack';
 import { LambdaStack } from '../stacks/LambdaStack';
 import { ApiStack } from '../stacks/ApiStack';
 import { AuthStack } from '../stacks/AuthStack';
+import { RdsDataNodejsStack } from '../stacks/RDSStack';
 
 const app = new App();
 
@@ -24,3 +25,6 @@ new ApiStack(app, 'ApiStack', {
   integrations: lambdaStack.integrations,
   userPool: authStack.userPool,
 });
+
+// expensive
+// new RdsDataNodejsStack(app, 'RdsNodeJsStack');

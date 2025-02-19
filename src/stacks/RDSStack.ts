@@ -11,6 +11,7 @@ import { Construct } from 'constructs';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { NodejsFunction, OutputFormat } from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Runtime, Tracing } from 'aws-cdk-lib/aws-lambda';
+import { join } from 'path';
 
 export class RdsDataNodejsStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -44,7 +45,7 @@ export class RdsDataNodejsStack extends Stack {
 
     const rdsAPIFunction = new NodejsFunction(this, 'RdsAPIFunction', {
       runtime: Runtime.NODEJS_20_X,
-      entry: 'lambda/handlers/getItem.ts', // Path to the Lambda function code
+      entry: join(__dirname, '..', 'lambdas', 'getItem.ts'), // Path to the Lambda function code
       handler: 'handler', // Exported handler function name
       tracing: Tracing.ACTIVE, // Enable X-Ray tracing
       environment: {

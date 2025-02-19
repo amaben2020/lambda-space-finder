@@ -4,6 +4,10 @@ GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/spaces?id=5a79c6
 GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/rds
 ###
 
+
+GET https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/items/1
+###
+
 POST https://doik9es99c.execute-api.eu-west-1.amazonaws.com/prod/s3-lambda
 content-type: application/json
 
