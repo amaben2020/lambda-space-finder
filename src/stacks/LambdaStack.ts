@@ -49,7 +49,7 @@ export class LambdaStack extends Stack {
     signin: LambdaIntegration;
     secret: LambdaIntegration;
     image: LambdaIntegration;
-    rdsLambda: LambdaIntegration;
+    // rdsLambda: LambdaIntegration;
     lambdaFn: LambdaIntegration;
   };
 
@@ -70,7 +70,7 @@ export class LambdaStack extends Stack {
       new PolicyStatement({
         effect: Effect.ALLOW,
         resources: [props.spacesTable.tableArn],
-        actions: ['dynamodb:PutItem', 'dynamodb:GetItem'],
+        actions: ['dynamodb:PutItem', 'dynamodb:GetItem', 'dynamodb:ScanItem'],
       })
     );
 
@@ -183,69 +183,69 @@ export class LambdaStack extends Stack {
       ],
     });
 
-    const dbSecurityGroup = new SecurityGroup(this, 'DbSecurityGroup', {
-      vpc,
-    });
+    // const dbSecurityGroup = new SecurityGroup(this, 'DbSecurityGroup', {
+    //   vpc,
+    // });
 
-    const lambdaSG = new SecurityGroup(this, 'LambdaSG', {
-      vpc: vpc,
-    });
+    // const lambdaSG = new SecurityGroup(this, 'LambdaSG', {
+    //   vpc: vpc,
+    // });
 
-    dbSecurityGroup.addIngressRule(
-      lambdaSG,
-      Port.tcp(5432),
-      'Lambda to Postgres database'
-    );
+    // dbSecurityGroup.addIngressRule(
+    //   lambdaSG,
+    //   Port.tcp(5432),
+    //   'Lambda to Postgres database'
+    // );
 
-    const dbInstance = new DatabaseInstance(this, 'Instance', {
-      engine: DatabaseInstanceEngine.postgres({
-        version: PostgresEngineVersion.VER_13,
-      }),
-      // optional, defaults to m5.large
-      instanceType: InstanceType.of(
-        InstanceClass.BURSTABLE3,
-        InstanceSize.SMALL
-      ),
-      vpc,
-      vpcSubnets: vpc.selectSubnets({
-        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-      }),
-      databaseName,
-      securityGroups: [dbSecurityGroup],
-      credentials: Credentials.fromGeneratedSecret('postgres'),
-      maxAllocatedStorage: 200,
-    });
+    // const dbInstance = new DatabaseInstance(this, 'Instance', {
+    //   engine: DatabaseInstanceEngine.postgres({
+    //     version: PostgresEngineVersion.VER_13,
+    //   }),
+    //   // optional, defaults to m5.large
+    //   instanceType: InstanceType.of(
+    //     InstanceClass.BURSTABLE3,
+    //     InstanceSize.SMALL
+    //   ),
+    //   vpc,
+    //   vpcSubnets: vpc.selectSubnets({
+    //     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    //   }),
+    //   databaseName,
+    //   securityGroups: [dbSecurityGroup],
+    //   credentials: Credentials.fromGeneratedSecret('postgres'),
+    //   maxAllocatedStorage: 200,
+    // });
 
-    const dbProxy = new DatabaseProxy(this, 'Proxy', {
-      proxyTarget: ProxyTarget.fromInstance(dbInstance),
-      secrets: [dbInstance.secret!],
-      securityGroups: [dbSecurityGroup],
-      vpc,
-      requireTLS: false,
-      vpcSubnets: vpc.selectSubnets({
-        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-      }),
-    });
+    // const dbProxy = new DatabaseProxy(this, 'Proxy', {
+    //   proxyTarget: ProxyTarget.fromInstance(dbInstance),
+    //   secrets: [dbInstance.secret!],
+    //   securityGroups: [dbSecurityGroup],
+    //   vpc,
+    //   requireTLS: false,
+    //   vpcSubnets: vpc.selectSubnets({
+    //     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    //   }),
+    // });
 
-    const rdsLambdaFn = new NodejsFunction(this, 'rdsLambdaFn', {
-      entry: join(__dirname, '..', 'lambdas', 'rds-lambda.ts'),
-      // ...nodeJsFunctionProps,
-      functionName: 'rdsLambdaFn',
-      environment: {
-        // DB_ENDPOINT_ADDRESS: dbInstance.dbInstanceEndpointAddress,
-        DB_ENDPOINT_ADDRESS: dbProxy.endpoint,
-        DB_NAME: databaseName,
-        DB_SECRET_ARN: dbInstance.secret?.secretFullArn || '',
-      },
-      vpc: vpc,
-      vpcSubnets: vpc.selectSubnets({
-        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-      }),
-      securityGroups: [lambdaSG],
-    });
+    // const rdsLambdaFn = new NodejsFunction(this, 'rdsLambdaFn', {
+    //   entry: join(__dirname, '..', 'lambdas', 'rds-lambda.ts'),
+    //   // ...nodeJsFunctionProps,
+    //   functionName: 'rdsLambdaFn',
+    //   environment: {
+    //     // DB_ENDPOINT_ADDRESS: dbInstance.dbInstanceEndpointAddress,
+    //     DB_ENDPOINT_ADDRESS: dbProxy.endpoint,
+    //     DB_NAME: databaseName,
+    //     DB_SECRET_ARN: dbInstance.secret?.secretFullArn || '',
+    //   },
+    //   vpc: vpc,
+    //   vpcSubnets: vpc.selectSubnets({
+    //     subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+    //   }),
+    //   securityGroups: [lambdaSG],
+    // });
 
-    // permission to the lambda
-    dbInstance.secret?.grantRead(rdsLambdaFn);
+    // // permission to the lambda
+    // dbInstance.secret?.grantRead(rdsLambdaFn);
 
     // Fetch the S3 bucket name from Parameter Store
     const s3BucketName = StringParameter.valueForStringParameter(
@@ -287,7 +287,7 @@ export class LambdaStack extends Stack {
       signin: new LambdaIntegration(signinLambda),
       secret: new LambdaIntegration(secretLambda),
       image: new LambdaIntegration(imageLambda),
-      rdsLambda: new LambdaIntegration(rdsLambdaFn),
+      // rdsLambda: new LambdaIntegration(rdsLambdaFn),
       lambdaFn: new LambdaIntegration(lambdaFn),
     };
   }

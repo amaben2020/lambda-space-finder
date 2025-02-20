@@ -7,10 +7,10 @@ import {
 import { postSpaces } from './spaces/PostSpaces';
 import { getSpaces } from './spaces/GetSpaces';
 import { MissingFieldError } from './shared/validator';
-import { captureAWSClient } from 'aws-xray-sdk-core/dist/lib/patchers/aws3_p';
-import { getSegment } from 'aws-xray-sdk-core';
+// import { captureAWSClient } from 'aws-xray-sdk-core/dist/lib/patchers/aws3_p';
 
-const ddbClient = captureAWSClient(new DynamoDBClient({}));
+// const ddbClient = captureAWSClient(new DynamoDBClient({}));
+const ddbClient = new DynamoDBClient({});
 
 // TODO: we can extract the handler later
 
@@ -20,7 +20,7 @@ async function handler(
 ): Promise<APIGatewayProxyResult> {
   // simulating a long api call
   // const subSegment = getSegment().addNewSubsegment('MyLongCall');
-  await new Promise((res) => setTimeout(res, 3000));
+  // await new Promise((res) => setTimeout(res, 3000));
 
   // subSegment.close();
 
